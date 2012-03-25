@@ -1,0 +1,15 @@
+ libarchiver authors
+ ===================
+
+libarchiver is the archiver utility implemented in the library form that uses
+the libminCrypt for the encryption/decryption of the data stored in the archive.
+The compression is optional only when you provide password and optional salt
+values. 
+
+The algorithm was both written and implemented by:
+
+	Michal Novotny <mignov@gmail.com>
+
+If you want to contribute to the algorithm feel free to post patches to
+the address/maintainer address written above and you'll be listed as one
+of the authors as well.

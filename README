@@ -1,0 +1,35 @@
+ libarchiver library and application README
+ ==========================================
+
+This library is the implementation of archiver utility along with the
+compression based on the minCrypt algorithm both designed and created
+by it's author, Michal Novotny. The mincrypt is the separate library
+written as based on the minCrypt document designed by it's author in
+early 2011.
+
+If you want to create the RPM packages for application the ./autobuild.sh
+script will create it for you.
+
+The algorithm has been implemented in C language with requirements
+for the minCrypt library mentioned above and it's distributed under
+the LGPLv2+ licence.
+
+Terminology
+-----------
+
+This library should be referred to as libarchiver.
+
+Pre-requisite software
+----------------------
+
+Where versions are noted below these are the versions tested to definitely
+work. For some of them you may be able to run with earlier releases, so
+please report any success to the mailing lists
+
+ libmincrypt
+
+Copyright /  License
+--------------------
+
+All the application code is covered under the LGPLv2+ licence. For more
+information please see the LICENSE file.
