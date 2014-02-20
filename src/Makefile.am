@@ -1,6 +1,6 @@
 # Library form
 lib_LTLIBRARIES = libarchiver.la
-libarchiver_la_CFLAGS = -Wall -fPIC -g -DLIBARCHIVER
+libarchiver_la_CFLAGS = -Wall -fPIC -g -shared -DLIBARCHIVER
 libarchiver_la_SOURCES = main.c crc.c compress.c archive.c archiver.h
 libarchiver_la_LIBS = -llzma -lmincrypt
 

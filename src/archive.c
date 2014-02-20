@@ -350,8 +350,6 @@ tArchiveFile *archive_read_header(int fd, unsigned int *oNumFiles, int *oHdrSize
 			goto outfree;
 		}
 
-		DPRINTF("Processing file information for file '%s'\n", name);
-
 		files[i].name = strdup(name);
 		files[i].crc = crc;
 		files[i].size = size;

@@ -1,14 +1,4 @@
-//#define DEBUG_ARCHIVER
-
 #include "archiver.h"
-
-#ifdef DEBUG_ARCHIVER
-#define DPRINTF(fmt, ...) \
-do { char *dtmp = get_datetime(); fprintf(stderr, "[%s ", dtmp); free(dtmp); dtmp=NULL; fprintf(stderr, "archiver/main     ] " fmt , ## __VA_ARGS__); fflush(stderr); } while (0)
-#else
-#define DPRINTF(fmt, ...) \
-do {} while(0)
-#endif
 
 unsigned int flags	= 0;
 char archiveFile[1024]	= { 0 };
@@ -17,24 +7,6 @@ char runCwd[1024]	= { 0 };
 char directory[1024]	= ".";	// Defaults to current directory
 char gPassword[1024]	= { 0 };
 char gSalt[1024]	= { 0 };
-
-char *get_datetime(void)
-{
-	char *outstr = NULL;
-	time_t t;
-	struct tm *tmp;
-
-	t = time(NULL);
-	tmp = localtime(&t);
-	if (tmp == NULL)
-		return NULL;
-
-	outstr = (char *)malloc( 32 * sizeof(char) );
-	if (strftime(outstr, 32, "%Y-%m-%d %H:%M:%S", tmp) == 0)
-		return NULL;
-
-	return outstr;
-}
 
 int parseFlags(int argc, char * const argv[]) {
     int option_index = 0, c;
@@ -91,7 +63,6 @@ int parseFlags(int argc, char * const argv[]) {
 			}
 			getcwd(runCwd, sizeof(runCwd));
 			chdir(optarg);
-			DPRINTF("Changing path to %s\n", optarg);
 			break;
             case 'd':	strncpy(directory, optarg, sizeof(directory));
 			break;
@@ -173,7 +144,6 @@ int listArchive(char *filename)
 	tArchiveFile *files;
 	unsigned int numFiles = 0, i = 0;
 
-	DPRINTF("%s: Filename is '%s'\n", __FUNCTION__, filename);
 	files = (tArchiveFile *)archive_files(filename, &numFiles);
 	if (numFiles == 0)
 		return 1;
@@ -221,20 +191,20 @@ int extractArchive(char *arcFile, char *filename, char *directory)
 
 	files = (tArchiveFile *)archive_files(arcFile, &numFiles);
 	if (numFiles == 0) {
-		DPRINTF("Incorrect number of files in the archive\n");
+		fprintf(stderr, "Incorrect number of files in the archive\n");
 		return 1;
 	}
 	if (files == NULL) {
-		DPRINTF("Invalid list of files\n");
+		fprintf(stderr, "Invalid list of files\n");
 		return 2;
 	}
 
 	if (filename && (strlen(filename) == 0))
 		filename = "<all>";
 
-	DPRINTF("Archive file: %s\n", arcFile);
-	DPRINTF("File to extract: %s\n", filename);
-	DPRINTF("Destination directory: %s\n", directory);
+	fprintf(stderr, "Archive file: %s\n", arcFile);
+	fprintf(stderr, "File to extract: %s\n", filename);
+	fprintf(stderr, "Destination directory: %s\n", directory);
 
 	mkdir(directory, 0755);
 	for (i = 0; i < numFiles; i++) {
@@ -242,7 +212,6 @@ int extractArchive(char *arcFile, char *filename, char *directory)
 			(strcmp(filename, "<all>") == 0)) {
 			if ((files[i].encrypted) && (gPassword == NULL)) {
 				char *tmp = NULL;
-				DPRINTF("File is password-protected\n");
 				tmp = getpass("Please enter password: ");
 				strncpy(gPassword, tmp, sizeof(gPassword));
 
@@ -277,10 +246,8 @@ void usage(char *name)
 
 void restoreOnExit(void)
 {
-	if (strlen(runCwd) > 0) {
-		DPRINTF("Restoring current path to %s\n", runCwd);
+	if (strlen(runCwd) > 0)
 		chdir(runCwd);
-	}
 }
 
 int main(int argc, char *argv[])
@@ -297,25 +264,20 @@ int main(int argc, char *argv[])
 
 	atexit(restoreOnExit);
 	flags = parseFlags(argc, argv);
-	if (gBufferSize != BUFFER_SIZE)
-		DPRINTF("Using buffer size of %d bytes\n", gBufferSize);
 
 	if ((!(flags & FLAG_ARCHIVE_SALT)) && (flags & FLAG_ARCHIVE_PASSWORD) && (strlen(gSalt) == 0)) {
-		DPRINTF("Salt value update requested.\n");
 		tmp = getpass("Please enter salt value: ");
 		if (tmp != NULL)
 			strncpy(gSalt, tmp, sizeof(gSalt));
 	}
 
 	if ((flags & FLAG_ARCHIVE_PASSWORD) && (strlen(gPassword) == 0)) {
-		DPRINTF("Password-protection requested\n");
 		tmp = getpass("Please enter password: ");
 		if (tmp != NULL)
 			strncpy(gPassword, tmp, sizeof(gPassword));
 	}
 
 	if ((flags & FLAG_ARCHIVE_PASSWORD) && (strlen(gSalt) > 0) && (strlen(gPassword) > 0)) {
-		DPRINTF("Password protection requested, salt = '%s', password = '%s'\n", gSalt, gPassword);
 		archive_encryption_enable(gSalt, gPassword);
 	}
 

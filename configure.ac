@@ -14,6 +14,6 @@ AC_CHECK_TOOL([RM], [rm])
 AC_CHECK_TOOL([CP], [cp])
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile include/Makefile examples/Makefile])
 AC_OUTPUT
 LT_OUTPUT
